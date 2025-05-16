@@ -1,63 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { Member } = require('../models');
+const controller = require('../controllers/memberController');
 
 // 🔹 Create a single member
-router.post('/', async (req, res) => {
-  try {
-    const data = await Member.create(req.body);
-    res.status(201).json(data);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+router.post('/', controller.create);
 
 // 🔹 Bulk create members
-router.post('/bulk', async (req, res) => {
-  try {
-    const data = await Member.bulkCreate(req.body);
-    res.status(201).json(data);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+router.post('/bulk', controller.bulkCreate);
 
 // 🔹 Get all members
-router.get('/', async (req, res) => {
-  try {
-    const data = await Member.findAll();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+router.get('/', controller.getAll);
 
-// 🔹 Update member by ID (partial update allowed)
-router.put('/:id', async (req, res) => {
-  try {
-    const member = await Member.findByPk(req.params.id);
-    if (!member) {
-      return res.status(404).json({ error: 'Member not found' });
-    }
-
-    await member.update(req.body); // Only updates provided fields
-    res.json(member);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+// 🔹 Update member by ID
+router.put('/:id', controller.update);
 
 // 🔹 Delete member by ID
-router.delete('/:id', async (req, res) => {
-  try {
-    const deleted = await Member.destroy({ where: { id: req.params.id } });
-    if (!deleted) {
-      return res.status(404).json({ error: 'Member not found' });
-    }
-    res.json({ message: 'Member deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+router.delete('/:id', controller.delete);
 
 module.exports = router;

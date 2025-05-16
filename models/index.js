@@ -6,16 +6,29 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.js')[env];
+const config = require(__dirname + '/../config/config.js')[env]; // Load configuration for the current environment
 const db = {};
 
-let sequelize;
+
+let sequelize; // Declare sequelize here
+
+// Create the Sequelize instance with credentials from config
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  sequelize = new Sequelize(process.env[config.use_env_variable], config); // Use environment variable if specified
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize(config.database, config.username, config.password, config); // Direct use of credentials from config
 }
 
+// Test the connection
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch((error) => {
+    console.error('Unable to connect to the database:', error);
+  });
+
+// Dynamically load all models from the current directory
 fs
   .readdirSync(__dirname)
   .filter(file => {
